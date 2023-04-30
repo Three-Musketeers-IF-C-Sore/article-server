@@ -22,7 +22,6 @@
     "mysql2": "^3.2.3",
     "sequelize": "^6.31.0",
     "sequelize-cli": "^6.6.0",
-    "typescript": "^5.0.3",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
