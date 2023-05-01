@@ -28,6 +28,9 @@ db.sequelize.sync()
         console.log("Failed to sync db: " + err.message);
     });
 
+// Main Routing
+
+
 // handle 404
 app.use((req, res, next) => {
     res.status(404).send({

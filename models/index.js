@@ -19,5 +19,25 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 db.users = require("./user.model.js")(sequelize, Sequelize);
+db.articles = require("./article.model.js")(sequelize, Sequelize);
+db.likes = require("./like.model.js")(sequelize, Sequelize);
+db.comments = require("./comment.model.js")(sequelize, Sequelize);
+
+db.users.hasMany(db.articles, {
+    as: "articles",
+});
+
+db.users.belongsToMany(db.articles, {
+    through: db.likes,
+});
+
+db.articles.belongsToMany(db.users, {
+    through: db.likes,
+});
+
+db.users.hasMany(db.comments);
+db.comments.belongsTo(db.users);
+db.articles.hasMany(db.comments);
+db.comments.belongsTo(db.articles);
 
 module.exports = db;
