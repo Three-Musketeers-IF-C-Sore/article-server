@@ -29,7 +29,9 @@ db.sequelize.sync()
     });
 
 // Main Routing
+const authRoutes = require('./routes/auth');
 
+app.use('/api/auth', authRoutes);
 
 // handle 404
 app.use((req, res, next) => {
