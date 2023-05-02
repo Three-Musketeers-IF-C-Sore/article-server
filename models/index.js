@@ -26,6 +26,10 @@ db.comments = require("./comment.model.js")(sequelize, Sequelize);
 db.users.hasMany(db.articles, {
     as: "articles",
 });
+db.articles.belongsTo(db.users, {
+    foreignKey: "userId",
+    as: "user",
+});
 
 db.users.belongsToMany(db.articles, {
     through: db.likes,

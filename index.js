@@ -30,8 +30,10 @@ db.sequelize.sync()
 
 // Main Routing
 const authRoutes = require('./routes/auth');
+const articleRoutes = require('./routes/article');
 
 app.use('/api/auth', authRoutes);
+app.use('/api', articleRoutes);
 
 // handle 404
 app.use((req, res, next) => {
