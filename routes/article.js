@@ -6,6 +6,7 @@ const { validateArticle } = require('../middleware/articleValidator');
 const { authMid } = require('../middleware/authMid');
 
 router.get('/articles', ArticleController.index);
+router.get('/articles/:id', ArticleController.show);
 router.post('/articles', authMid, validateArticle, ArticleController.store);
 
 module.exports = router;

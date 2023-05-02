@@ -20,6 +20,27 @@ const index = async (req, res) => {
     }
 }
 
+const show = async (req, res) => {
+    try {
+        const article = await Article.findOne({
+            where: {
+                id: req.params.id,
+            },
+            attributes: { exclude: ['userId'] },
+            include: {
+                model: User,
+                attributes: { exclude: ['password'] },
+                as: "user",
+            }
+        })
+        return res.status(200).json({
+            data: article,
+        })
+    } catch (err) {
+        return res.status(500).end();
+    }
+}
+
 const store = async (req, res) => {
     try {
         const { title, body } = req.body;
@@ -39,4 +60,4 @@ const store = async (req, res) => {
     }
 }
 
-module.exports = { index, store };
+module.exports = { index, show, store };
