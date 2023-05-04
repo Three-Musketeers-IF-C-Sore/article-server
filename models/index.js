@@ -29,6 +29,8 @@ db.users.hasMany(db.articles, {
 db.articles.belongsTo(db.users, {
     foreignKey: "userId",
     as: "user",
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
 });
 
 db.users.belongsToMany(db.articles, {
@@ -40,8 +42,14 @@ db.articles.belongsToMany(db.users, {
 });
 
 db.users.hasMany(db.comments);
-db.comments.belongsTo(db.users);
+db.comments.belongsTo(db.users, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+});
 db.articles.hasMany(db.comments);
-db.comments.belongsTo(db.articles);
+db.comments.belongsTo(db.articles, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+});
 
 module.exports = db;
