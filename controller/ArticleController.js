@@ -3,25 +3,40 @@ const Article = model.articles;
 const User = model.users;
 const Like = model.likes;
 const Comment = model.comments;
+const jwt = require('jsonwebtoken');
 
 const index = async (req, res) => {
     try{
-        const articles = await Article.findAll({
-            attributes: { exclude: ['userId'] },
-            include: [
-                {
-                    model: User,
-                    attributes: { exclude: ['password'] },
-                    as: "author",
+        let user;
+        if (token = req.headers.authorization) {
+            user = jwt.verify(token, process.env.JWT_KEY);    
+            console.log(user);
+        }
+        const [results, metadata] = await model.sequelize.query(`
+            select 
+                articles.*, 
+                users.id as user_id,
+                users.name as user_name,
+                case when likes.userId is not null then true else false end as is_liked
+            from articles
+            left join users on articles.userId = users.id
+            left join likes on articles.id = likes.articleId and likes.userId = '${user?.id}'
+        `);
+
+        let articles = [];
+        results.forEach((result) => {
+            articles.push({
+                'id': result['id'],
+                'title': result['title'],
+                'body': result['body'],
+                'createdAt': result['createdAt'],
+                'updatedAt': result['updatedAt'],
+                'author': {
+                    'id': result['user_id'],
+                    'name': result['user_name'],
                 },
-                {
-                    association: 'likes',
-                    through: {
-                        attributes: []
-                    },
-                    attributes: { exclude: ['password'] },
-                }
-            ],
+                'isLiked': result['is_liked'],
+            });
         });
         return res.status(200).json({
             data: articles,
@@ -89,12 +104,12 @@ const like = async (req, res) => {
                 articleId: article.id,
             });
 
-            await article.reload({
-                include: {
-                    model: User,
-                    through: Like
-                }
-            });
+            // await article.reload({
+            //     include: {
+            //         model: User,
+            //         through: Like
+            //     }
+            // });
         }
         return res.status(200).json({
             message: "Article liked"
