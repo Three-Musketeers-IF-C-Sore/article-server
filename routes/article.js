@@ -7,7 +7,7 @@ const { authMid } = require('../middleware/authMid');
 router.get('/articles', ArticleController.index);
 router.get('/articles/:id', ArticleController.show);
 router.patch('/articles/like/:id', authMid, ArticleController.like);
-router.patch('/articles/comments/:id', authMid, ArticleController.storeComment);
+router.post('/articles/comments/:id', authMid, ArticleController.storeComment);
 router.delete('/articles/comments/:id', authMid, ArticleController.destroyComment);
 
 module.exports = router;
