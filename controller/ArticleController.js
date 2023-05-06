@@ -15,15 +15,6 @@ const index = async (req, res) => {
                     as: "author",
                 },
                 {
-                    model: Comment,
-                    attributes: { exclude: ['articleId', 'userId'] },
-                    include: {
-                        model: User,
-                        attributes: { exclude:['password'] },
-                        as: "user",
-                    },
-                },
-                {
                     association: 'likes',
                     through: {
                         attributes: []
@@ -31,7 +22,6 @@ const index = async (req, res) => {
                     attributes: { exclude: ['password'] },
                 }
             ],
-            order: [[Comment, 'createdAt', 'ASC']],
         });
         return res.status(200).json({
             data: articles,
@@ -48,11 +38,23 @@ const show = async (req, res) => {
                 id: req.params.id,
             },
             attributes: { exclude: ['userId'] },
-            include: {
-                model: User,
-                attributes: { exclude: ['password'] },
-                as: "author",
-            }
+            include: [
+                {
+                    model: User,
+                    attributes: { exclude: ['password'] },
+                    as: "author",
+                },
+                {
+                    model: Comment,
+                    attributes: { exclude: ['articleId', 'userId'] },
+                    include: {
+                        model: User,
+                        attributes: { exclude:['password'] },
+                        as: "user",
+                    },
+                },
+            ],
+            order: [[Comment, 'createdAt', 'ASC']],
         })
         return res.status(200).json({
             data: article,

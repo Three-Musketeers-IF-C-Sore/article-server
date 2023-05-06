@@ -2,6 +2,7 @@ const model = require('../models/index');
 const User = model.users;
 const Article = model.articles;
 const Like = model.likes;
+const Comment = model.comments;
 
 const index = async (req, res) => {
     if(req.query.favorite == "true") {
@@ -43,11 +44,23 @@ const show = async (req, res) => {
                 id: req.params.id,
             },
             attributes: { exclude: ['userId'] },
-            include: {
-                model: User,
-                attributes: { exclude: ['password'] },
-                as: "author",
-            }
+            include: [
+                {
+                    model: User,
+                    attributes: { exclude: ['password'] },
+                    as: "author",
+                },
+                {
+                    model: Comment,
+                    attributes: { exclude: ['articleId', 'userId'] },
+                    include: {
+                        model: User,
+                        attributes: { exclude:['password'] },
+                        as: "user",
+                    },
+                },
+            ],
+            order: [[Comment, 'createdAt', 'ASC']],
         })
         return res.status(200).json({
             data: article,
