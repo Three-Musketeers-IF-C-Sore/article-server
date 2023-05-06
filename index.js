@@ -3,8 +3,6 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require('body-parser');
 const cookieParser = require("cookie-parser");
-const testRoute = require("./routes/test");
-
 
 const app = express();
 app.use(cookieParser());
@@ -15,8 +13,6 @@ app.use(cors({
     credentials: true,
     origin: "http://localhost:3000",
 }));
-
-app.use("/test", testRoute);
 
 const db = require("./models");
 

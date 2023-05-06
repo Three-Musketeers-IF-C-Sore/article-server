@@ -41,15 +41,16 @@ db.articles.belongsToMany(db.users, {
     through: db.likes,
 });
 
-db.users.hasMany(db.comments);
-db.comments.belongsTo(db.users, {
+db.users.hasMany(db.comments, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
 });
-db.articles.hasMany(db.comments);
-db.comments.belongsTo(db.articles, {
+db.comments.belongsTo(db.users);
+
+db.articles.hasMany(db.comments, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
 });
+db.comments.belongsTo(db.articles);
 
 module.exports = db;

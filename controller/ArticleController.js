@@ -2,6 +2,7 @@ const model = require('../models/index');
 const Article = model.articles;
 const User = model.users;
 const Like = model.likes;
+const Comment = model.comments;
 
 const index = async (req, res) => {
     try{
@@ -11,7 +12,17 @@ const index = async (req, res) => {
                 model: User,
                 attributes: { exclude: ['password'] },
                 as: "user",
-            }
+            },
+            include: {
+                model: Comment,
+                attributes: { exclude: ['articleId', 'userId'] },
+                include: {
+                    model: User,
+                    attributes: { exclude:['password'] },
+                    as: "user",
+                },
+            },
+            order: [[Comment, 'createdAt', 'ASC']],
         });
         return res.status(200).json({
             data: articles,
@@ -88,4 +99,49 @@ const like = async (req, res) => {
     }
 }
 
-module.exports = { index, show, like };
+const storeComment = async (req, res) => {
+    try{
+        const { text } = req.body;
+
+        const comment = await Comment.create({
+            text: text,
+            userId: req.user.id,
+            articleId: req.params.id,
+        });
+
+        return res.status(200).json({
+            data: comment,
+        });
+    } catch(err) {
+        return res.status(500).end();
+    }
+}
+
+const destroyComment = async (req, res) => {
+    try{
+        const comment = await Comment.findOne({
+            where: {
+                userId: req.user.id,
+                id: req.params.id,
+            }
+        });
+
+        if(!comment) {
+            return res.status(404).json({
+                message: "Comment Not Found"
+            })
+        }
+
+        if(req.user.id == comment.articleId) return res.status(401).json({ message: "Unauthorized" });
+
+        comment.destroy();
+        return res.status(200).json({
+            message: "The comment was successfully deleted!"
+        });
+
+    } catch(err) {
+        return res.status(500).end()
+    }
+}
+
+module.exports = { index, show, like, storeComment, destroyComment };
