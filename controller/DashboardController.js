@@ -26,7 +26,7 @@ const index = async (req, res) => {
             include: {
                 model: User,
                 attributes: { exclude: ['password'] },
-                as: "user",
+                as: "author",
             }
         })
     
@@ -46,7 +46,7 @@ const show = async (req, res) => {
             include: {
                 model: User,
                 attributes: { exclude: ['password'] },
-                as: "user",
+                as: "author",
             }
         })
         return res.status(200).json({
