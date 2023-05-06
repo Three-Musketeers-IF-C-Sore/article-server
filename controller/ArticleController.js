@@ -8,20 +8,29 @@ const index = async (req, res) => {
     try{
         const articles = await Article.findAll({
             attributes: { exclude: ['userId'] },
-            include: {
-                model: User,
-                attributes: { exclude: ['password'] },
-                as: "user",
-            },
-            include: {
-                model: Comment,
-                attributes: { exclude: ['articleId', 'userId'] },
-                include: {
+            include: [
+                {
                     model: User,
-                    attributes: { exclude:['password'] },
-                    as: "user",
+                    attributes: { exclude: ['password'] },
+                    as: "author",
                 },
-            },
+                {
+                    model: Comment,
+                    attributes: { exclude: ['articleId', 'userId'] },
+                    include: {
+                        model: User,
+                        attributes: { exclude:['password'] },
+                        as: "user",
+                    },
+                },
+                {
+                    association: 'likes',
+                    through: {
+                        attributes: []
+                    },
+                    attributes: { exclude: ['password'] },
+                }
+            ],
             order: [[Comment, 'createdAt', 'ASC']],
         });
         return res.status(200).json({

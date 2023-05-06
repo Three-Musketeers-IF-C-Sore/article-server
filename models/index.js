@@ -30,7 +30,7 @@ db.users.hasMany(db.articles, {
 });
 db.articles.belongsTo(db.users, {
     foreignKey: "userId",
-    as: "user",
+    as: "author",
 });
 
 db.users.belongsToMany(db.articles, {
@@ -39,6 +39,7 @@ db.users.belongsToMany(db.articles, {
 
 db.articles.belongsToMany(db.users, {
     through: db.likes,
+    as: 'likes'
 });
 
 db.users.hasMany(db.comments, {
