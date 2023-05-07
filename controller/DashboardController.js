@@ -3,18 +3,42 @@ const User = model.users;
 const Article = model.articles;
 const Like = model.likes;
 const Comment = model.comments;
+const jwt = require("jsonwebtoken");
 
 const index = async (req, res) => {
     if(req.query.favorite == "true") {
-        const articles = await Article.findAll({
-            include: {
-                model: User,
-                where: { id: req.user.id },
-                attributes: { exclude: ['password'] },
-                through: Like,
-            },
-            attributes: { exclude: ['userId'] },
+        let user;
+        if (token = req.headers.authorization) {
+            user = jwt.verify(token, process.env.JWT_KEY);    
+            console.log(user);
+        }
+        const [results, metadata] = await model.sequelize.query(`
+            select 
+                articles.*, 
+                users.id as user_id,
+                users.name as user_name,
+                case when likes.userId is not null then true else false end as is_liked
+            from articles
+            left join users on articles.userId = users.id
+            left join likes on articles.id = likes.articleId and likes.userId = '${user?.id}'
+            having is_liked = 1
+        `);
+        let articles = [];
+        results.forEach((result) => {
+            articles.push({
+                'id': result['id'],
+                'title': result['title'],
+                'body': result['body'],
+                'createdAt': result['createdAt'],
+                'updatedAt': result['updatedAt'],
+                'author': {
+                    'id': result['user_id'],
+                    'name': result['user_name'],
+                },
+                'isLiked': result['is_liked'],
+            });
         });
+
         return res.status(200).json({
             data: articles,
         });
